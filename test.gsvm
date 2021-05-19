@@ -1,0 +1,5 @@
+reserve number
+push 1
+push 12
+add
+save number
