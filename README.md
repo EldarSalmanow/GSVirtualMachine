@@ -1,5 +1,4 @@
 # GSVirtualMachine
-GSVirtualMachine - VM for executing bitecode from GSLanguageCompiler.
 EN: GSVirtualMachine - VM for executing bitecode from GSLanguageCompiler written in C++20. The VM is under development.<br>
 RU: GSVirtualMachine - ВМ для исполнения байткода из GSLanguageCompiler, написанная на C++20. ВМ находится в стадии разработки.
 
@@ -39,5 +38,5 @@ GSVirtualMachine.exe --file {pathToInputFile}.gsvm --test
 
 Run with profiling of each executing step.
 ```shell
-GSVirtualMachine.exe --file {pathToInputFile}.gs --profiling
+GSVirtualMachine.exe --file {pathToInputFile}.gsvm --profiling
 ```
