@@ -9,6 +9,8 @@
 
 #include <CrossPlatform/GS_PlatformTypes.h>
 
+#include <Exceptions/GS_Exception.h>
+
 namespace GSVirtualMachine::Runtime {
 
     using namespace asmjit;
@@ -20,15 +22,13 @@ namespace GSVirtualMachine::Runtime {
 
         ADD,
         SUB,
+        MUL,
+        DIV,
 
-        TO_REG_1,
-        FROM_REG_1,
+        CALL,
 
-        TO_REG_2,
-        FROM_REG_2,
-
-        TO_REG_3,
-        FROM_REG_3,
+        TO_REG,
+        FROM_REG,
 
         DONE
     };
