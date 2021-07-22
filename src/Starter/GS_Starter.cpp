@@ -1,23 +1,49 @@
-#include "../../include/Starter/GS_Starter.h"
+#include <Starter/GS_Starter.h>
 
 namespace Starter {
 
-    int GS_Starter::start(int argc, char **argv) {
+    GSVoid GS_DebugFunctions::printReaderDebugInfo(GSByte &byte) {
+        std::cerr
+        << std::nouppercase
+        << std::showbase
+        << std::hex
+        << static_cast<GSShort>(byte)
+        << std::dec
+        << std::endl;
+    }
+
+    GSVoid printException(Exceptions::GS_Exception &exception) {
+        GS_CrossPlatform::setConsoleColor(GS_CrossPlatform::BLACK, GS_CrossPlatform::RED);
+
+        std::cerr << exception.what() << std::endl;
+
+        GS_CrossPlatform::setConsoleColor(GS_CrossPlatform::BLACK, GS_CrossPlatform::WHITE);
+    }
+
+    GSInt GS_Starter::start(GSInt argc, GSChar **argv) {
         try {
             parseArguments(argc, argv);
 
-            if (_CompilerData::arguments == nullptr) {
+            if (_compilerData.argumentsOptions.getIsInvalidArguments()) {
                 return 1;
-            } else if (_CompilerData::arguments->getIsProfilingEnable()) {
-                _Timers::totalTimer.runtime("Total time");
+            } else if (_compilerData.argumentsOptions.getIsEnableProfiling()) {
+                GS_Timer totalTimer;
 
-                Debug::GS_TimerResults::printTimerResults();
+                totalTimer.start();
+
+                startCompiling();
+
+                totalTimer.stop();
+
+                _timer.addResult("Total time: \t\t\t\t\t" + std::to_string(totalTimer.result().count()) + " microseconds\n");
+
+                _timer.printResults();
             } else {
                 startCompiling();
             }
 
-        } catch (Exceptions::_GS_Exception &exception) {
-            exception._printErrorMessage();
+        } catch (Exceptions::GS_Exception &exception) {
+            printException(exception);
 
             return 1;
         } catch (std::exception &exception) {
@@ -25,86 +51,80 @@ namespace Starter {
 
             return 1;
         }
+
         return 0;
     }
 
     void GS_Starter::startCompiling() {
-
         // reading source from file
         startReader();
-
-        // tokenizing source
-        startLexer();
-
-        // parsing tokens to AST
-        startParser();
 
         // starting program and vm
         startRuntime();
 
-        if (_CompilerData::arguments->getIsTestingEnable()) {
+        if (_compilerData.argumentsOptions.getIsEnableTesting()) {
             // start debug mode
             startDebugMode();
         }
     }
 
     void GS_Starter::startReader() {
-        GSReaderPointer reader(new GS_Reader(_CompilerData::arguments->getFilename()));
+        auto reader = std::make_shared<GS_Reader>(_compilerData.argumentsOptions.getInputFilename());
 
-        if (_CompilerData::arguments->getIsProfilingEnable()) {
-            _CompilerData::inputSource = _Timers::readerTimer.runtime("Reading input time", *reader);
+        if (_compilerData.argumentsOptions.getIsEnableProfiling()) {
+            GS_Timer readerTimer;
+
+            readerTimer.start();
+
+            _compilerData.inputSource = reader->readFile();
+
+            readerTimer.stop();
+
+            _timer.addResult("Reading input time: \t\t\t\t" + std::to_string(readerTimer.result().count()) + " microseconds\n");
         } else {
-            _CompilerData::inputSource = reader->readFile();
-        }
-    }
-
-    void GS_Starter::startLexer() {
-        GSLexerPointer lexer(new GS_Lexer(_CompilerData::inputSource));
-
-        if (_CompilerData::arguments->getIsProfilingEnable()) {
-            _CompilerData::tokens = _Timers::lexerTimer.runtime("Lexer analyzing time", *lexer);
-        } else {
-            _CompilerData::tokens = lexer->tokenize();
-        }
-    }
-
-    void GS_Starter::startParser() {
-        GSParserPointer parser(new GS_Parser(_CompilerData::tokens, _CompilerData::inputSource));
-
-        if (_CompilerData::arguments->getIsProfilingEnable()) {
-            _CompilerData::statements = _Timers::parserTimer.runtime("Parsing tokens time", *parser);
-        } else {
-            _CompilerData::statements = parser->parse();
+            _compilerData.inputSource = reader->readFile();
         }
     }
 
     void GS_Starter::startRuntime() {
-        if (_CompilerData::arguments->getIsProfilingEnable()) {
-            _Timers::runtimeTimer.runtime("Running program time", _CompilerData::statements);
+        if (_compilerData.argumentsOptions.getIsEnableProfiling()) {
+            GS_Timer runtimeTimer;
+
+            runtimeTimer.start();
+
+            GS_Runtime::run(_compilerData.inputSource);
+
+            runtimeTimer.stop();
+
+            _timer.addResult("Running program time: \t\t\t\t" + std::to_string(runtimeTimer.result().count()) + " microseconds\n");
         } else {
-            Runtime::GS_Runtime::run(_CompilerData::statements);
+            GS_Runtime::run(_compilerData.inputSource);
         }
     }
 
-    void GS_Starter::parseArguments(int argc, char *argv[]) {
-        _CompilerData::arguments = GSArgumentsPointer(new GS_Arguments(argc, argv));
+    GSVoid GS_Starter::parseArguments(GSInt argc, GSChar *argv[]) {
+        auto argumentsParser = std::make_shared<GS_Arguments>(argc, argv);
 
-        _CompilerData::arguments->parseArguments();
+        _compilerData.argumentsOptions = argumentsParser->parseArguments();
 
-        if (argc < 3 || _CompilerData::arguments->getFilename().empty()) {
-            _CompilerData::arguments->printUsage();
+        if (argc < 3 || _compilerData.argumentsOptions.getInputFilename().empty()) {
+            argumentsParser->printUsage();
 
-            // setting arguments to null
-            _CompilerData::arguments = nullptr;
+            _compilerData.argumentsOptions.setIsInvalidArguments(true);
         }
     }
 
     void GS_Starter::startDebugMode() {
-        Debug::GS_Debug::printInput(_CompilerData::inputSource);
-        Debug::GS_Debug::printLexerOutput(_CompilerData::tokens);
-        Debug::GS_Debug::printParserOutput(_CompilerData::statements);
-        Debug::GS_Debug::printTableOfSymbols();
-        Debug::GS_Debug::printStack();
+        GS_Timer debugTimer;
+
+        debugTimer.start();
+
+        GS_Debug::printDebugInformation("\n----------READER OUT START----------\n", "\n----------READER OUT END----------\n",
+                                        &GS_DebugFunctions::printReaderDebugInfo, _compilerData.inputSource);
+
+        debugTimer.stop();
+
+        _timer.addResult("Printing debug info time: \t\t\t" + std::to_string(debugTimer.result().count()) + " microseconds\n");
     }
 
 }

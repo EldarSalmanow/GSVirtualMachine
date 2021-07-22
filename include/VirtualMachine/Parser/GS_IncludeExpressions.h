@@ -1,8 +1,0 @@
-#ifndef GSVIRTUALMACHINE_GS_INCLUDEEXPRESSIONS_H
-#define GSVIRTUALMACHINE_GS_INCLUDEEXPRESSIONS_H
-
-//#include "Expressions/GS_UnaryExpression.h"
-
-#include "Expressions/GS_VaLueExpression.h"
-
-#endif //GSVIRTUALMACHINE_GS_INCLUDEEXPRESSIONS_H
