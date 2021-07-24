@@ -9,7 +9,7 @@
 
 #include <Exceptions/GS_Exception.h>
 
-namespace GSVirtualMachine {
+namespace GSVirtualMachine::Reader {
 
     /**
      * Reader for read files

@@ -2,41 +2,6 @@
 
 namespace GSVirtualMachine::Runtime {
 
-    class VM {
-    public:
-
-        std::stack<GSByte> stack;
-
-        GSByte registers[8] = {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
-        };
-    };
-
-    class ConstTable {
-    public:
-
-        std::map<GSInt, GSString> stringConstants;
-
-        std::map<GSInt, GSString> functionConstants;
-    };
-
-    std::map<GSByte, Opcode> byteToOpcode = {
-            {0x0,  Opcode::PUSH_I},
-            {0x1,  Opcode::POP},
-
-            {0x2,  Opcode::ADD},
-            {0x3,  Opcode::SUB},
-            {0x4,  Opcode::MUL},
-            {0x5,  Opcode::DIV},
-
-            {0x6,  Opcode::CALL},
-
-            {0xf,  Opcode::TO_REG},
-            {0xf1, Opcode::FROM_REG},
-
-            {0xff, Opcode::DONE},
-    };
-
     GSVoid print(GSString &string) {
         std::cout << string;
     }
@@ -48,146 +13,200 @@ namespace GSVirtualMachine::Runtime {
     GSVoid input(GSString &string) {
         GSChar symbol = '\0';
 
-        while (symbol != '\n') {
+        while (true) {
             std::cin.get(symbol);
+
+            if (symbol == '\n') {
+                break;
+            }
 
             string += symbol;
         }
     }
 
     GSVoid GS_Runtime::run(GSByteCode &bytecode) {
-        auto constTable = new ConstTable;
+        GS_VMImageDecoder decoder(bytecode);
 
-        constTable->functionConstants[1] = "print";
-        constTable->functionConstants[2] = "println";
-        constTable->functionConstants[3] = "input";
+        VM<GSByte> vm;
 
-        auto vm = new VM;
+        while (decoder.decodeByte() == Opcode::CONSTANT) {
+            decoder.nextByte();
 
-        _bytecode = bytecode;
+            auto index = decoder.getByte();
 
-        _bytecodeIterator = _bytecode.begin();
+            decoder.nextByte();
 
-        while (_bytecodeIterator != bytecode.end()) {
-            Opcode opcode = byteToOpcode[_bytecodeIterator[0]];
+            auto value = decoder.getByte();
 
-            switch (opcode) {
-                case Opcode::PUSH_I: {
-                    ++_bytecodeIterator;
+            decoder.nextByte();
 
-                    auto value = _bytecodeIterator[0];
+            _constantTable.indexToConstant[index] = value;
+        }
 
-                    vm->stack.push(value);
+        while (decoder.decodeByte() == Opcode::VARIABLE) {
+            decoder.nextByte();
 
-                    break;
-                }
-                case Opcode::POP: {
-                    vm->stack.pop();
+            auto index = decoder.getByte();
 
-                    break;
-                }
-                case Opcode::ADD: {
-                    auto secondValue = vm->stack.top();
+            decoder.nextByte();
 
-                    vm->stack.pop();
+            GSString variableName;
 
-                    auto firstValue = vm->stack.top();
+            while (decoder.getByte() != '\0') {
+                variableName += static_cast<GSChar>(decoder.getByte());
 
-                    vm->stack.pop();
-
-                    vm->stack.push(firstValue + secondValue);
-
-                    break;
-                }
-                case Opcode::SUB: {
-                    auto secondValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    auto firstValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    vm->stack.push(firstValue - secondValue);
-
-                    break;
-                }
-                case Opcode::MUL: {
-                    auto secondValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    auto firstValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    vm->stack.push(firstValue * secondValue);
-
-                    break;
-                }
-                case Opcode::DIV: {
-                    auto secondValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    if (secondValue == 0) {
-                        throw Exceptions::GS_Exception("Division by zero!");
-                    }
-
-                    auto firstValue = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    vm->stack.push(firstValue / secondValue);
-
-                    break;
-                }
-                case Opcode::CALL: {
-                    ++_bytecodeIterator;
-
-                    auto functionName = constTable->functionConstants[static_cast<GSInt>(_bytecodeIterator[0])];
-
-                    ++_bytecodeIterator;
-
-                    auto constantIndex = static_cast<GSInt>(_bytecodeIterator[0]);
-
-                    if (functionName == "print") {
-                        print(constTable->stringConstants[constantIndex]);
-                    } else if (functionName == "println") {
-                        println(constTable->stringConstants[constantIndex]);
-                    } else if (functionName == "input") {
-                        input(constTable->stringConstants[constantIndex]);
-                    }
-
-                    break;
-                }
-                case Opcode::TO_REG: {
-                    ++_bytecodeIterator;
-
-                    auto registerNumber = static_cast<GSInt>(_bytecodeIterator[0]);
-
-                    vm->registers[registerNumber] = vm->stack.top();
-
-                    vm->stack.pop();
-
-                    break;
-                }
-                case Opcode::FROM_REG: {
-                    ++_bytecodeIterator;
-
-                    auto registerNumber = static_cast<GSInt>(_bytecodeIterator[0]);
-
-                    vm->stack.push(vm->registers[registerNumber]);
-
-                    break;
-                }
-                case Opcode::DONE: {
-                    return;
-                }
+                decoder.nextByte();
             }
 
-            ++_bytecodeIterator;
+            decoder.nextByte();
+
+            _variableTable.indexToVariableName[index] = variableName;
         }
+
+        while (decoder.decodeByte() == Opcode::FUNCTION) {
+            decoder.nextByte();
+
+            auto index = decoder.getByte();
+
+            decoder.nextByte();
+
+            GSString functionName;
+
+            while (decoder.getByte() != '\0') {
+                functionName += static_cast<GSChar>(decoder.getByte());
+
+                decoder.nextByte();
+            }
+
+            decoder.nextByte();
+
+            _functionTable.indexToFunctionName[index] = functionName;
+        }
+
+        switch (decoder.decodeByte()) {
+            case Opcode::PUSH: {
+                decoder.nextByte();
+
+                auto value = decoder.getByte();
+
+                vm.stack.push(value);
+
+                break;
+            }
+            case Opcode::POP: {
+                vm.stack.pop();
+
+                break;
+            }
+            case Opcode::ADD: {
+                decoder.nextByte();
+
+                auto secondValue = decoder.getByte();
+
+                decoder.nextByte();
+
+                auto firstValue = decoder.getByte();
+
+                vm.stack.push(firstValue + secondValue);
+
+                break;
+            }
+            case Opcode::SUB: {
+                decoder.nextByte();
+
+                auto secondValue = decoder.getByte();
+
+                decoder.nextByte();
+
+                auto firstValue = decoder.getByte();
+
+                vm.stack.push(firstValue - secondValue);
+
+                break;
+            }
+            case Opcode::MUL: {
+                decoder.nextByte();
+
+                auto secondValue = decoder.getByte();
+
+                decoder.nextByte();
+
+                auto firstValue = decoder.getByte();
+
+                vm.stack.push(firstValue * secondValue);
+
+                break;
+            }
+            case Opcode::DIV: {
+                decoder.nextByte();
+
+                auto secondValue = decoder.getByte();
+
+                if (secondValue == 0) {
+                    throw Exceptions::GS_Exception("Division by zero!");
+                }
+
+                decoder.nextByte();
+
+                auto firstValue = decoder.getByte();
+
+                vm.stack.push(firstValue / secondValue);
+
+                break;
+            }
+            case Opcode::CALL: {
+                decoder.nextByte();
+
+                auto index = decoder.getByte();
+
+                auto functionName = _functionTable.indexToFunctionName[index];
+
+                if (functionName == "print") {
+                    GSString message = "Hello, Print!";
+
+                    print(message);
+                } else if (functionName == "println") {
+                    GSString message = "Hello, Println!";
+
+                    println(message);
+                } else if (functionName == "input") {
+                    GSString variable;
+
+                    input(variable);
+
+                    print(variable);
+                }
+
+                break;
+            }
+            case Opcode::TO_REG: {
+                decoder.nextByte();
+
+                auto registerNumber = decoder.getByte();
+
+                vm.registers[registerNumber] = vm.stack.top();
+
+                break;
+            }
+            case Opcode::FROM_REG: {
+                decoder.nextByte();
+
+                auto registerNumber = decoder.getByte();
+
+                vm.stack.push(vm.registers[registerNumber]);
+
+                vm.registers[registerNumber] = 0;
+
+                break;
+            }
+            case Opcode::DONE: {
+                return;
+            }
+            default:
+                throw Exceptions::GS_Exception("Unknown opcode for VM!");
+        }
+
+        decoder.nextByte();
     }
 
 }

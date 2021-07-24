@@ -1,12 +1,12 @@
 #include <GS_Reader.h>
 
-namespace GSVirtualMachine {
+namespace GSVirtualMachine::Reader {
 
     GS_Reader::GS_Reader(GSString filename)
             : _filename(std::move(filename)) {}
 
     GSByteCode GS_Reader::readFile() {
-        GSByte symbol;
+        GSChar symbol;
         std::ifstream stream;
 
         try {
@@ -17,13 +17,13 @@ namespace GSVirtualMachine {
             }
 
             while (true) {
-                stream >> symbol;
+                stream.read(&symbol, 1);
 
                 if (stream.eof()) {
                     break;
                 }
 
-                _input.emplace_back(symbol);
+                _input.emplace_back(static_cast<GSByte>(symbol));
             }
         } catch (std::exception &exception) {
             if (stream.is_open()) {

@@ -1,13 +1,13 @@
 #ifndef GSVIRTUALMACHINE_GS_RUNTIME_H
 #define GSVIRTUALMACHINE_GS_RUNTIME_H
 
-#include <map>
-#include <stack>
 #include <iostream>
 
 #include <asmjit/asmjit.h>
 
-#include <CrossPlatform/GS_PlatformTypes.h>
+#include <Runtime/GS_VMImageDecoder.h>
+#include <Runtime/GS_VM.h>
+#include <Runtime/GS_VMTables.h>
 
 #include <Exceptions/GS_Exception.h>
 
@@ -15,25 +15,6 @@ namespace GSVirtualMachine::Runtime {
 
     using namespace asmjit;
     using namespace x86;
-
-    enum class Opcode {
-        PUSH_I,
-        POP,
-
-        ADD,
-        SUB,
-        MUL,
-        DIV,
-
-        CALL,
-
-        TO_REG,
-        FROM_REG,
-
-        DONE
-    };
-
-    extern std::map<GSByte, Opcode> byteToOpcode;
 
     /**
      *
@@ -52,12 +33,17 @@ namespace GSVirtualMachine::Runtime {
         /**
          *
          */
-        inline static GSByteCode _bytecode;
+        inline static GS_VMConstTable _constantTable;
 
         /**
          *
          */
-        inline static GSByteCode::iterator _bytecodeIterator;
+        inline static GS_VMVariableTable _variableTable;
+
+        /**
+         *
+         */
+        inline static GS_VMFunctionTable _functionTable;
     };
 
 }

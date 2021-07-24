@@ -33,11 +33,20 @@
 
     typedef unsigned long long GSULongLong;
 
-    typedef unsigned char GSByte;
-
-    typedef std::vector<GSByte> GSByteCode;
-
     typedef std::string GSString;
+
+    namespace GSVirtualMachine::Runtime {
+        typedef unsigned char GSByte;
+
+        typedef std::vector<GSByte> GSByteCode;
+    }
+
+    namespace GSVirtualMachine::Reader {
+        typedef unsigned char GSByte;
+
+        typedef std::vector<GSByte> GSByteCode;
+    }
+
 #endif
 
 #endif //GSVIRTUALMACHINE_GS_PLATFORMTYPES_H

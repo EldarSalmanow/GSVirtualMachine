@@ -1,6 +1,8 @@
 #ifndef GSVIRTUALMACHINE_GS_STARTER_H
 #define GSVIRTUALMACHINE_GS_STARTER_H
 
+#include <functional>
+
 #include <ArgumentsParser/GS_Arguments.h>
 #include <Reader/GS_Reader.h>
 #include <Runtime/GS_Runtime.h>
@@ -13,6 +15,7 @@ namespace Starter {
 
     using namespace Arguments;
 
+    using namespace Reader;
     using namespace Runtime;
 
     using namespace Debug;
@@ -84,6 +87,14 @@ namespace Starter {
          * @return
          */
         static GSVoid parseArguments(GSInt argc, GSChar *argv[]);
+
+        /**
+         *
+         * @param function
+         * @param messageForProfiling
+         * @return
+         */
+        static GSVoid runWithTimer(std::function<GSVoid()> &function, GSString messageForProfiling);
 
         /**
          * Start reading source from file
