@@ -4,3 +4,9 @@
 
 # IDE dirs
 /.idea
+
+# Binary dir
+/bin
+
+# External dir
+/external/*
