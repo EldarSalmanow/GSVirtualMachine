@@ -5,7 +5,7 @@ RU: GSVirtualMachine - ВМ для исполнения байткода из GS
 # Getting source
 ```shell
 1) cd {pathToDir}
-2) git clone https://github.com/EldarSalmanow/GSVirtualMachine.git
+2) git clone https://github.com/EldarSalmanow/GSVirtualMachine.git --recurse-submodules
 ```
 1. Go to the directory to clone the repository.
 2. Cloning repository.
