@@ -16,32 +16,40 @@ namespace GSVirtualMachine::Runtime {
             {0x7,  Opcode::TO_REG},
             {0x8,  Opcode::FROM_REG},
 
-            {0x9,  Opcode::CONSTANT},
-            {0xa,  Opcode::VARIABLE},
-            {0xb,  Opcode::FUNCTION},
+            {0x9,  Opcode::CONSTANT_NUMBER},
+            {0xa,  Opcode::CONSTANT_STRING},
+
+            {0xb,  Opcode::VARIABLE_NUMBER},
+            {0xc,  Opcode::VARIABLE_STRING},
+
+            {0xd,  Opcode::FUNCTION},
 
             {0xff, Opcode::DONE}
     };
 
     std::map<Opcode, GSString> opcodeToString = {
-            {Opcode::PUSH,     "PUSH"},
-            {Opcode::POP,      "POP"},
+            {Opcode::PUSH,            "PUSH"},
+            {Opcode::POP,             "POP"},
 
-            {Opcode::ADD,      "ADD"},
-            {Opcode::SUB,      "SUB"},
-            {Opcode::MUL,      "MUL"},
-            {Opcode::DIV,      "DIV"},
+            {Opcode::ADD,             "ADD"},
+            {Opcode::SUB,             "SUB"},
+            {Opcode::MUL,             "MUL"},
+            {Opcode::DIV,             "DIV"},
 
-            {Opcode::CALL,     "CALL"},
+            {Opcode::CALL,            "CALL"},
 
-            {Opcode::TO_REG,   "TO_REG"},
-            {Opcode::FROM_REG, "FROM_REG"},
+            {Opcode::TO_REG,          "TO_REG"},
+            {Opcode::FROM_REG,        "FROM_REG"},
 
-            {Opcode::CONSTANT, "CONSTANT"},
-            {Opcode::VARIABLE, "VARIABLE"},
-            {Opcode::FUNCTION, "FUNCTION"},
+            {Opcode::CONSTANT_NUMBER, "CONSTANT_NUMBER"},
+            {Opcode::CONSTANT_STRING, "CONSTANT_STRING"},
 
-            {Opcode::DONE,     "DONE"}
+            {Opcode::VARIABLE_NUMBER, "VARIABLE_NUMBER"},
+            {Opcode::VARIABLE_STRING, "VARIABLE_STRING"},
+
+            {Opcode::FUNCTION,        "FUNCTION"},
+
+            {Opcode::DONE,            "DONE"}
     };
 
 }

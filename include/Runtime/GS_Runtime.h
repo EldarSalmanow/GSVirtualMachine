@@ -32,18 +32,27 @@ namespace GSVirtualMachine::Runtime {
 
         /**
          *
+         * @param decoder
+         * @param constantTable
+         * @return
          */
-        inline static GS_VMConstTable _constantTable;
+        static GSVoid parseConstants(GS_VMImageDecoder &decoder, GS_VMConstTable &constantTable);
 
         /**
          *
+         * @param decoder
+         * @param variableTable
+         * @return
          */
-        inline static GS_VMVariableTable _variableTable;
+        static GSVoid parseVariables(GS_VMImageDecoder &decoder, GS_VMVariableTable &variableTable);
 
         /**
          *
+         * @param decoder
+         * @param functionTable
+         * @return
          */
-        inline static GS_VMFunctionTable _functionTable;
+        static GSVoid parseFunctions(GS_VMImageDecoder &decoder, GS_VMFunctionTable &functionTable);
     };
 
 }
