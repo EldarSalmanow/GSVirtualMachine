@@ -18,12 +18,21 @@ RU: GSVirtualMachine - ВМ для исполнения байткода из GS
 4) cmake -G "Visual Studio 16 2019" ../ or cmake -G "MinGW Makefiles" ../
 5) cmake --build . --target GSVirtualMachine
 ```
-EN:
 1. Go to the directory with the cloned repository.
 2. Create a directory for storing assembly files.
 3. Go to the previously created directory.
 4. Generating assembly files via CMake.<br>You can choose either configuration via MinGW or via MSVC.<br>Support for other compilers is not guaranteed at this time.
 5. Building an executable file via target "GSVirtualMachine"
+
+# Install
+```shell
+1) cd {pathToDir}/GSVirtualMachine
+2) cd build
+3) cmake --install .
+```
+1. Go to the directory with the cloned repository.
+2. Go to the build directory.
+3. Install binaries to {pathToDir}/GSVirtualMachine/bin.
 
 # Run
 Run without additional flags
