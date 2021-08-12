@@ -107,6 +107,10 @@ namespace Starter {
 
         _compilerData.argumentsOptions = argumentsParser->parseArguments();
 
+        if (_compilerData.argumentsOptions.getIsInvalidArguments()) {
+            return;
+        }
+
         if (argc < 3 || _compilerData.argumentsOptions.getInputFilename().empty()) {
             argumentsParser->printUsage();
 

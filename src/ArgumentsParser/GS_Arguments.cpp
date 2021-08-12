@@ -53,7 +53,7 @@ namespace GSVirtualMachine::Arguments {
             } else if (argument == "-h" || argument == "--help") {
                 printUsage();
 
-                break;
+                return GS_ArgumentsOptions(inputFilename, isEnableTesting, isEnableProfiling, true);
             } else if (argument == "-t" || argument == "--test") {
                 isEnableTesting = true;
 
@@ -75,7 +75,7 @@ namespace GSVirtualMachine::Arguments {
                 << "Usage: \n"
                 << "\t-f --file      \tMain filename to compiling\n"
                 << "\t-t --test      \tPrinting information because compiling\n"
-                << "\t-p --profiling \tPrinting profiling compilation information"
+                << "\t-p --profiling \tPrinting profiling compilation information\n"
                 << "\t-h --help      \tInformation about flags and compiler\n"
                 << std::endl;
     }

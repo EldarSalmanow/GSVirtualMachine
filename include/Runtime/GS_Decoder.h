@@ -1,5 +1,5 @@
-#ifndef GSVIRTUALMACHINE_GS_VMIMAGEDECODER_H
-#define GSVIRTUALMACHINE_GS_VMIMAGEDECODER_H
+#ifndef GSVIRTUALMACHINE_GS_DECODER_H
+#define GSVIRTUALMACHINE_GS_DECODER_H
 
 #include <Runtime/GS_Opcode.h>
 
@@ -8,16 +8,14 @@ namespace GSVirtualMachine::Runtime {
     /**
      *
      */
-    class GS_VMImageDecoder {
+    class GS_Decoder {
     public:
-
-
 
         /**
          *
          * @param bytecode
          */
-        explicit GS_VMImageDecoder(GSByteCode bytecode);
+        explicit GS_Decoder(GSByteCode bytecode);
 
     public:
 
@@ -25,19 +23,25 @@ namespace GSVirtualMachine::Runtime {
          *
          * @return
          */
-        Opcode decodeByte();
-
-        /**
-         *
-         * @return
-         */
-        GSByte getByte();
+        GSByte currentByte();
 
         /**
          *
          * @return
          */
         GSVoid nextByte();
+
+        /**
+         *
+         * @return
+         */
+        GSBool end();
+
+        /**
+         *
+         * @return
+         */
+        Opcode opcode();
 
     private:
 
@@ -54,4 +58,4 @@ namespace GSVirtualMachine::Runtime {
 
 }
 
-#endif //GSVIRTUALMACHINE_GS_VMIMAGEDECODER_H
+#endif //GSVIRTUALMACHINE_GS_DECODER_H

@@ -38,6 +38,8 @@
     namespace GSVirtualMachine::Runtime {
         typedef unsigned char GSByte;
 
+        typedef GSByte* GSBytePtr;
+
         typedef std::vector<GSByte> GSByteCode;
     }
 
