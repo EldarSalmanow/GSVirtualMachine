@@ -11,27 +11,39 @@ namespace GSVirtualMachine::Runtime {
      *
      */
     enum class Opcode {
+        CONSTANT_STRING,
+
+        VARIABLE_NUMBER,
+
         PUSH,
         POP,
 
-        PUSH_CONSTANT,
+        PUSH_CONSTANT_ADR,
 
         TO_REG,
         FROM_REG,
+
+        SAVE,
+        GET,
+
+        LABEL,
+
+        JMP,
+        JIE,
+        JINE,
+        JIG,
+        JIL,
+        JIEG,
+        JIEL,
+
+        CALL,
+
+        CMP,
 
         ADD,
         SUB,
         MUL,
         DIV,
-
-        CALL,
-
-        CONSTANT_STRING,
-
-        VARIABLE_NUMBER,
-
-        SAVE,
-        GET,
 
         DONE
     };

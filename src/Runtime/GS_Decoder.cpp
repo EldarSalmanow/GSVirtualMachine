@@ -3,26 +3,64 @@
 namespace GSVirtualMachine::Runtime {
 
     GS_Decoder::GS_Decoder(GSByteCode bytecode)
-            : _bytecode(std::move(bytecode)), _bytecodeIterator(_bytecode.begin()) {}
+            : _bytecode(std::move(bytecode)), _bytecodePtr(&_bytecode[0]), _bytecodeIndex(0) {}
 
-    GSByte GS_Decoder::currentByte() {
+    GSBytePtr GS_Decoder::currentByte() {
         if (!end()) {
-            return _bytecodeIterator[0];
+            return _bytecodePtr;
         } else {
-            throw std::runtime_error("Bytecode has ended!");
+            throw Exceptions::GS_Exception("Bytecode has ended!");
         }
     }
 
     GSVoid GS_Decoder::nextByte() {
-        ++_bytecodeIterator;
+//        ++_bytecodeIndex;
+
+        ++_bytecodePtr;
+
+        if (end()) {
+            throw Exceptions::GS_Exception("Bytecode is ended!");
+        }
+    }
+
+    GSVoid GS_Decoder::prevByte() {
+        --_bytecodePtr;
+    }
+
+    GSVoid GS_Decoder::jmpTo(GSBytePtr address) {
+        _bytecodePtr = address;
     }
 
     GSBool GS_Decoder::end() {
-        return _bytecodeIterator == _bytecode.end();
+        return _bytecodePtr == nullptr;
     }
 
     Opcode GS_Decoder::opcode() {
-        return byteToOpcode[currentByte()];
+        return byteToOpcode[*currentByte()];
+    }
+
+    GSString GS_Decoder::string() {
+        GSString value;
+
+        while (true) {
+            auto symbol = *currentByte();
+
+            value += static_cast<GSChar>(symbol);
+
+            if (symbol == 0) {
+                break;
+            }
+
+            nextByte();
+        }
+
+        nextByte();
+
+        return value;
+    }
+
+    GSVoid GS_Decoder::setCursorToStart() {
+        _bytecodePtr = &_bytecode[0];
     }
 
 }

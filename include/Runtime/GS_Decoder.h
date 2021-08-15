@@ -3,6 +3,8 @@
 
 #include <Runtime/GS_Opcode.h>
 
+#include <Exceptions/GS_Exception.h>
+
 namespace GSVirtualMachine::Runtime {
 
     /**
@@ -23,13 +25,26 @@ namespace GSVirtualMachine::Runtime {
          *
          * @return
          */
-        GSByte currentByte();
+        GSBytePtr currentByte();
 
         /**
          *
          * @return
          */
         GSVoid nextByte();
+
+        /**
+         *
+         * @return
+         */
+        GSVoid prevByte();
+
+        /**
+         *
+         * @param address
+         * @return
+         */
+        GSVoid jmpTo(GSBytePtr address);
 
         /**
          *
@@ -43,6 +58,18 @@ namespace GSVirtualMachine::Runtime {
          */
         Opcode opcode();
 
+        /**
+         *
+         * @return
+         */
+        GSString string();
+
+        /**
+         *
+         * @return
+         */
+        GSVoid setCursorToStart();
+
     private:
 
         /**
@@ -53,7 +80,12 @@ namespace GSVirtualMachine::Runtime {
         /**
          *
          */
-        GSByteCode::iterator _bytecodeIterator;
+        GSBytePtr _bytecodePtr;
+
+        /**
+         *
+         */
+        GSInt _bytecodeIndex;
     };
 
 }

@@ -28,4 +28,14 @@ namespace GSVirtualMachine::Runtime {
         _numberToValue[id] = value;
     }
 
+    GS_LabelsTable::GS_LabelsTable() = default;
+
+    GSVoid GS_LabelsTable::addLabel(GSString name, GSBytePtr address) {
+        _nameToLabel[std::move(name)] = address;
+    }
+
+    GSBytePtr GS_LabelsTable::getLabelByName(GSString name) {
+        return _nameToLabel[std::move(name)];
+    }
+
 }

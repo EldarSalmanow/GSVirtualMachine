@@ -92,6 +92,36 @@ namespace GSVirtualMachine::Runtime {
         std::map<GSInt, GSInt> _numberToValue;
     };
 
+    /**
+     *
+     */
+    class GS_LabelsTable {
+    public:
+
+        GS_LabelsTable();
+
+    public:
+
+        /**
+         *
+         * @param name
+         * @param address
+         * @return
+         */
+        GSVoid addLabel(GSString name, GSBytePtr address);
+
+        /**
+         *
+         * @param name
+         * @return
+         */
+        GSBytePtr getLabelByName(GSString name);
+
+    private:
+
+        std::map<GSString, GSBytePtr> _nameToLabel;
+    };
+
 }
 
 #endif //GSVIRTUALMACHINE_GS_TABLESOFSYMBOLS_H
